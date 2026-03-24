@@ -1,0 +1,21 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: |
+          pip install fastapi "uvicorn[standard]" mlflow scikit-learn \
+            xgboost evidently prometheus-client pandas numpy httpx \
+            pytest pytest-asyncio ruff openai locust pyyaml
+      - name: Lint
+        run: ruff check .
+      - name: Test
+        run: python -m pytest tests/ -v --tb=short

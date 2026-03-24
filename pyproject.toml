@@ -1,0 +1,29 @@
+[project]
+name = "sentinel-platform"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "mlflow",
+    "scikit-learn",
+    "xgboost",
+    "evidently",
+    "prometheus-client",
+    "pandas",
+    "numpy",
+    "httpx",
+    "pytest",
+    "pytest-asyncio",
+    "ruff",
+    "openai",
+    "locust",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
