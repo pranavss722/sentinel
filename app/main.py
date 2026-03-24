@@ -32,7 +32,7 @@ def create_app() -> FastAPI:
     registry = ModelRegistry(
         client=client,
         model_name=MODEL_NAME,
-        loader_fn=mlflow.pyfunc.load_model,
+        loader_fn=mlflow.xgboost.load_model,
     )
 
     drift_monitor = DriftMonitor(

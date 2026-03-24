@@ -30,7 +30,7 @@ async def test_app_health_endpoint():
 
     with patch("app.main.MlflowClient", return_value=FakeMlflowClient()), \
          patch("app.main.mlflow") as mock_mlflow:
-        mock_mlflow.pyfunc.load_model.return_value = fake_model
+        mock_mlflow.xgboost.load_model.return_value = fake_model
 
         from app.main import create_app
         app = create_app()
@@ -48,7 +48,7 @@ async def test_app_predict_endpoint():
 
     with patch("app.main.MlflowClient", return_value=FakeMlflowClient()), \
          patch("app.main.mlflow") as mock_mlflow:
-        mock_mlflow.pyfunc.load_model.return_value = fake_model
+        mock_mlflow.xgboost.load_model.return_value = fake_model
 
         from app.main import create_app
         app = create_app()
@@ -68,7 +68,7 @@ async def test_app_has_metrics_endpoint():
 
     with patch("app.main.MlflowClient", return_value=FakeMlflowClient()), \
          patch("app.main.mlflow") as mock_mlflow:
-        mock_mlflow.pyfunc.load_model.return_value = fake_model
+        mock_mlflow.xgboost.load_model.return_value = fake_model
 
         from app.main import create_app
         app = create_app()

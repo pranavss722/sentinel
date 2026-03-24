@@ -27,19 +27,19 @@ def test_alerts_yml_has_all_5_rules():
 
 
 def test_grafana_dashboard_is_valid_json():
-    with open("grafana/dashboards/ml_serving.json") as f:
+    with open("grafana/dashboards/sentinel.json") as f:
         data = json.load(f)
     assert isinstance(data, dict)
 
 
 def test_grafana_dashboard_has_6_panels():
-    with open("grafana/dashboards/ml_serving.json") as f:
+    with open("grafana/dashboards/sentinel.json") as f:
         data = json.load(f)
     assert len(data["panels"]) == 6
 
 
 def test_grafana_dashboard_panel_titles():
-    with open("grafana/dashboards/ml_serving.json") as f:
+    with open("grafana/dashboards/sentinel.json") as f:
         data = json.load(f)
     titles = {p["title"] for p in data["panels"]}
     assert titles == {

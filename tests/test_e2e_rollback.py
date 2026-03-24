@@ -37,7 +37,7 @@ async def test_e2e_drift_triggers_rollback():
              "SLO_P99_MS": "200",
              "SLO_ERROR_RATE_PCT": "1.0",
          }):
-        mock_mlflow.pyfunc.load_model.return_value = fake_model
+        mock_mlflow.xgboost.load_model.return_value = fake_model
 
         from app.main import create_app
         app = create_app()
@@ -73,7 +73,7 @@ async def test_e2e_slo_breach_triggers_rollback():
              "SLO_P99_MS": "200",
              "SLO_ERROR_RATE_PCT": "1.0",
          }):
-        mock_mlflow.pyfunc.load_model.return_value = fake_model
+        mock_mlflow.xgboost.load_model.return_value = fake_model
 
         from app.main import create_app
         app = create_app()

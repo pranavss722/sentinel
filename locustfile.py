@@ -1,4 +1,4 @@
-"""Locust load test for ML Serving Platform."""
+"""Locust load test for Sentinel."""
 import logging
 import random
 

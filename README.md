@@ -1,7 +1,8 @@
 # Sentinel
 
-> Production-grade ML serving pipeline with canary rollout, drift detection, and automatic SLO-based rollback.
-> Built by [Pranav Saravanan](https://github.com/pranavss722)
+> - Production-grade ML serving pipeline with canary rollout, drift detection, and automatic SLO-based rollback.
+> - A system that watches your models and acts autonomously when something goes wrong.
+> - Built by [Pranav Saravanan](https://github.com/pranavss722)
 
 ## What This Demonstrates
 

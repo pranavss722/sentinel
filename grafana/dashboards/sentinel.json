@@ -1,6 +1,6 @@
 {
-  "uid": "ml-serving",
-  "title": "ML Serving Platform",
+  "uid": "sentinel",
+  "title": "Sentinel",
   "timezone": "browser",
   "schemaVersion": 39,
   "version": 1,
