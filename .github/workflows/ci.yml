@@ -18,3 +18,29 @@ jobs:
         run: python -m pytest tests/ -v --tb=short
       - name: Incident demo (autonomous rollback)
         run: python scripts/demo_incident.py
+
+  fresh-clone:
+    # Docker-parity gate. Installs ONLY the declared runtime deps (no dev extras)
+    # into a clean interpreter, then imports the app. Catches the "works on my
+    # machine, breaks on a fresh clone / in Docker / in prod" bug class where a
+    # runtime module imports a package only present because a dev tool pulled it
+    # in. Then installs the minimal test runner and runs the suite, which also
+    # catches deps imported lazily inside code paths rather than at module load.
+    name: fresh clone (runtime deps only)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install ONLY runtime deps (no dev extras)
+        run: |
+          python -m pip install --upgrade pip
+          pip install .
+      - name: Smoke-import the app (fails if a runtime dep is undeclared)
+        run: python -c "import app.main; print('fresh-clone import OK')"
+      - name: Install minimal test runner and run suite
+        run: |
+          pip install pytest pytest-asyncio
+          python -m pytest tests/ -q
