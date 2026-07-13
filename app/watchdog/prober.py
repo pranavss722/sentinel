@@ -34,7 +34,11 @@ class ProbeResult:
 
 class _Response(Protocol):
     status_code: int
-    text: str
+
+    # Read-only property (not a settable attribute) so httpx.Response — whose
+    # ``text`` is a read-only property — structurally satisfies this Protocol.
+    @property
+    def text(self) -> str: ...
 
 
 # A request function takes (method, url, timeout) and returns a response-like
