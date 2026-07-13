@@ -5,10 +5,19 @@ venv/
 .env
 mlruns/
 mlartifacts/
+mlflow.db
+*.db
 models/*.pkl
 models/*.joblib
 models/*.xgb
 .pytest_cache/
 .ruff_cache/
+*.egg-info/
+build/
+dist/
 .DS_Store
-reports/
+# Ignore generated reports, but keep the two portfolio artifacts trackable so
+# they render on GitHub.
+reports/*
+!reports/incident_report.md
+!reports/incident_timeline.png

@@ -114,18 +114,26 @@ def test_check_slo_passes_when_healthy():
 
 def test_check_slo_fails_on_high_latency():
     controller = make_controller()
-    # Simulate breached p99 latency
-    for _ in range(100):
+    # Simulate breached p99 latency over a well-sampled window (>= min-sample floor)
+    for _ in range(300):
         controller.record_latency(0.300)  # 300ms > 200ms SLO
     assert controller.check_slo() is False
 
 
 def test_check_slo_fails_on_high_error_rate():
     controller = make_controller()
-    # Simulate 5% error rate
-    for i in range(100):
-        controller.record_request(error=(i < 5))
+    # Simulate 5% error rate over a well-sampled window (>= min-sample floor)
+    for i in range(300):
+        controller.record_request(error=(i < 15))
     assert controller.check_slo() is False
+
+
+def test_check_slo_ignores_thin_window_below_min_samples():
+    controller = make_controller()
+    # A handful of wildly-slow requests must NOT be trusted as a p99 breach.
+    for _ in range(50):
+        controller.record_latency(5.0)  # 5000ms, but only 50 samples < 200 floor
+    assert controller.check_slo() is True
 
 
 def test_rollback_resets_canary_weight():

@@ -5,6 +5,8 @@ import numpy as np
 import pytest
 from unittest.mock import patch
 
+from app.metrics import canary_rollback_total
+
 
 class FakeModel:
     def predict_proba(self, X):
@@ -80,11 +82,25 @@ async def test_e2e_slo_breach_triggers_rollback():
 
         controller = app.state.canary_controller
 
-        # Inject 100 latency recordings of 1.0s (1000ms >> 200ms SLO)
-        for _ in range(100):
+        # Inject a SUSTAINED breach: 300 latency recordings of 1.0s
+        # (1000ms >> 200ms SLO), well above the min-sample floor so the SLO is
+        # actually evaluated.
+        for _ in range(300):
             controller.record_latency(1.0)
 
         assert controller.check_slo() is False
 
-        controller.rollback()
+        before = canary_rollback_total._value.get()
+
+        # A single breaching poll must NOT roll back (debounce protects against
+        # transient spikes).
+        assert controller.poll_once() is False
+        assert controller.canary_weight == 0.5
+
+        # But a breach sustained across the required consecutive polls does.
+        rolled = False
+        for _ in range(controller._rollback_consecutive_breaches):
+            rolled = controller.poll_once() or rolled
+        assert rolled is True
         assert controller.canary_weight == 0.0
+        assert canary_rollback_total._value.get() == before + 1

@@ -1,0 +1,61 @@
+# Sentinel Watchdog — synthetic-monitoring targets.
+#
+# This is the dogfooding config: Sentinel watches the author's OWN live demos.
+# Everything here is trivially editable — add/remove targets, tweak SLOs. URLs
+# live ONLY in this file, never in code.
+#
+# Fields per target:
+#   name              unique label (used for metrics + alerts)
+#   url               full URL to probe
+#   method            HTTP method (default GET)
+#   expected_status   status code that counts as "up" (default 200)
+#   body_check        optional substring the response body must contain
+#   latency_slo_ms    hard p99 latency SLO in milliseconds
+#   availability_slo  target availability, e.g. 0.995 == "three nines" budget 0.5%
+#   interval_seconds  probe cadence
+#   timeout_seconds   per-probe timeout; a timeout counts as a failed probe
+
+# Burn-rate window profile: "production" (30-day SLO window, canonical SRE table)
+# or "demo" (accelerated seconds-scale windows for a quick, testable demo).
+# Override at the CLI with `--profile demo`.
+profile: production
+
+alerting:
+  # Push backend: "ntfy" (default) or "pushover". Endpoints/topics/tokens are
+  # read from the environment at send time — see app/watchdog/alerts.py:
+  #   ntfy:     NTFY_SERVER (default https://ntfy.sh), NTFY_TOPIC
+  #   pushover: PUSHOVER_TOKEN, PUSHOVER_USER
+  # If the chosen backend is unconfigured, alerts are LOGGED, not pushed.
+  backend: ntfy
+
+targets:
+  # rag-ops — health endpoint (returns {"status": "ok"})
+  - name: rag-ops-health
+    url: https://rag-ops-production.up.railway.app/health
+    method: GET
+    expected_status: 200
+    body_check: "ok"
+    latency_slo_ms: 800
+    availability_slo: 0.995
+    interval_seconds: 30
+    timeout_seconds: 10
+
+  # rag-ops — "The Dugout" football-intelligence UI (front page)
+  - name: rag-ops-dugout-ui
+    url: https://rag-ops-production.up.railway.app/
+    method: GET
+    expected_status: 200
+    latency_slo_ms: 1500
+    availability_slo: 0.99
+    interval_seconds: 60
+    timeout_seconds: 10
+
+  # rag-ops — OpenAPI docs (proves the API layer is serving)
+  - name: rag-ops-docs
+    url: https://rag-ops-production.up.railway.app/docs
+    method: GET
+    expected_status: 200
+    latency_slo_ms: 1500
+    availability_slo: 0.99
+    interval_seconds: 60
+    timeout_seconds: 10

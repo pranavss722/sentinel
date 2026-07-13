@@ -11,11 +11,10 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install dependencies
-        run: |
-          pip install fastapi "uvicorn[standard]" mlflow scikit-learn \
-            xgboost evidently prometheus-client pandas numpy httpx \
-            pytest pytest-asyncio ruff openai locust pyyaml
+        run: pip install -e ".[dev]"
       - name: Lint
         run: ruff check .
       - name: Test
         run: python -m pytest tests/ -v --tb=short
+      - name: Incident demo (autonomous rollback)
+        run: python scripts/demo_incident.py

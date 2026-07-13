@@ -78,3 +78,30 @@ def test_kl_divergence_exposed():
 def test_should_rollback_false_before_any_data():
     monitor = make_monitor()
     assert monitor.should_rollback() is False
+
+
+def test_reset_clears_computed_drift_but_preserves_reference():
+    monitor = make_monitor()
+    rng = np.random.RandomState(42)
+    ref = pd.DataFrame(rng.randn(1000, 3), columns=["f0", "f1", "f2"])
+    monitor.set_reference(ref, ref_scores=rng.rand(1000))
+
+    # Drive a breaching update.
+    cur = pd.DataFrame(rng.randn(500, 3), columns=["f0", "f1", "f2"])
+    cur["f1"] = cur["f1"] + 10.0
+    monitor.update(cur, rng.rand(500))
+    assert monitor.should_rollback() is True
+
+    # Reset clears the computed PSI/KL verdict so a fresh canary is not
+    # instantly in breach from the prior incident.
+    monitor.reset()
+    assert monitor.should_rollback() is False
+    assert monitor.get_psi_values() == {}
+    assert monitor.get_kl_divergence() == 0.0
+
+    # The reference baseline is preserved: a fresh breaching update is still
+    # detected (reset did not wipe set_reference()).
+    cur2 = pd.DataFrame(rng.randn(500, 3), columns=["f0", "f1", "f2"])
+    cur2["f1"] = cur2["f1"] + 10.0
+    monitor.update(cur2, rng.rand(500))
+    assert monitor.should_rollback() is True

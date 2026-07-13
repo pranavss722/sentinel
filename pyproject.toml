@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "sentinel-platform"
 version = "0.1.0"
@@ -5,7 +9,7 @@ requires-python = ">=3.11"
 dependencies = [
     "fastapi",
     "uvicorn[standard]",
-    "mlflow",
+    "mlflow>=2.14",
     "scikit-learn",
     "xgboost",
     "evidently",
@@ -13,12 +17,22 @@ dependencies = [
     "pandas",
     "numpy",
     "httpx",
+    "openai",
+    "locust",
+    "pyyaml",
+]
+
+[project.optional-dependencies]
+dev = [
     "pytest",
     "pytest-asyncio",
     "ruff",
-    "openai",
-    "locust",
+    "matplotlib",
+    "pyyaml",
 ]
+
+[tool.setuptools]
+packages = ["app", "scripts"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

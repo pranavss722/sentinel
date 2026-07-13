@@ -76,6 +76,20 @@ class DriftMonitor:
         prediction_drift_kl_divergence.set(self._kl_value)
         self._has_update = True
 
+    def reset(self) -> None:
+        """Clear computed drift state so a freshly promoted canary starts clean.
+
+        The reference baseline (``set_reference``) is deliberately PRESERVED — a
+        new canary should still be judged against the champion's healthy
+        distribution. Only the *computed* PSI/KL metrics from the prior incident
+        are dropped, so ``should_rollback`` returns False until fresh data is
+        observed and the next canary does not inherit the previous incident's
+        drift verdict.
+        """
+        self._psi_values = {}
+        self._kl_value = 0.0
+        self._has_update = False
+
     def get_psi_values(self) -> dict[str, float]:
         return dict(self._psi_values)
 
