@@ -37,3 +37,14 @@ prediction_drift_kl_divergence = Gauge(
     "prediction_drift_kl_divergence",
     "KL divergence on prediction score distribution",
 )
+
+model_retrains_total = Counter(
+    "model_retrains_total",
+    "Total drift-triggered model retrains",
+    ["reason"],
+)
+
+retrain_consecutive_drift = Gauge(
+    "retrain_consecutive_drift",
+    "Consecutive drifted evaluations currently observed by the retrain controller",
+)
